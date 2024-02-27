@@ -1,0 +1,35 @@
+# Chessboard Diagram Assignment Report
+
+[Replace the square-bracketed text with your own text. *Leave everything else unchanged.* 
+Note, the reports are parsed to check word limits, etc. Changing the format may cause 
+the parsing to fail.]
+
+## Feature Extraction (Max 200 Words)
+
+Feature extraction was performed using PCA, widely used dimensionality reduction method. PCA identifies eigenvectors with the highest eigenvalues in the covariance matrix of the training features vector. This process involves normalising the features vector by subtracting its mean, ensuring consistent scaling. The subsequent dot product between the normalised vector and the eigenvectors matrix yields the final features. Initially, PCA was applied with 40 eigenvectors, and 10 were chosen using divergence. However, the classifier's performance varied, excelling for clean data but underperforming for noisy data. To optimise for noisy data, the final feature extraction involved selecting 10 eigenvectors using PCA. PCA was chosen due to the small training dataset size and its effectiveness in reducing noise. The decision to prioritise noisy data optimisation, even at the expense of clean data classification, aligns with the overarching goal of enhancing classifier performance in the presence of noise.
+
+## Square Classifier (Max 200 Words)
+
+Neural networks are good classifiers for most problems. For this assignment, a 2-layer Perceptron Neural Network was implemented due to the non-linear nature of the problem. There are 10 inputs, hidden layer with 7900 neurons and 13 outputs (for each class). ReLU activation function was used for hidden layer because of good performance and low likelihood of vanishing gradient. Softmax activation function was used in the output layer. Softmax is activation function which finds probability of each neuron and all 13 neurons probabilities must sum to 1. Predicted class is the neuron with the highest probability. In order to train model well, loss function needs to be implemented which gives information for the model how wrong the prediction was. Loss function used is binary entropy loss function. Learning rate which gave the highest classification score was 0.0001 with 50 epochs. Stochastic approach was used for learning, so the dataset was divided into batches containing 10 squares. Someone could argue whether kNN or neural network is better. However, kNN does not include backpropagation which may make NN better. The limitation of neural network in this case is too few data to obtain 100% classification accuracy.
+
+## Full-board Classification (Max 200 Words)
+
+Full board classification was performed by calling square classifier with some additional steps. Assumption was made that the game starts with black figures on the top and white on the bottom of the board. In this scenario black pawns cannot reach first row and white pawns cannot reach last row. Thus, all predictions where black pawns occupied the first row were replaced with white pawn label and the other way around for white pawns. Moreover, after observations, it turned out that white pawn was often misclassified as white bishop for probabilities greater than 0.8 and black pawn for lower probabilities. Also, white pawn was misclassified as black king. Thus, next step included gathering predictions for all figures except pawns and filter them by number of their occurrences greater than 2 (there can be only 2 the same figures on the board). Then for each of filtered predictions, the first two with highest probabilities were left unchanged and the rest were replaced with figures mentioned earlier. This method did not give better results for noisy data, but for clean data, classification correctness improved.
+
+## Performance
+
+My percentage correctness scores (to 1 decimal place) for the development data are as follows.
+
+High quality data:
+
+- Percentage Squares Correct: 95.3%
+- Percentage Boards Correct: 95.6%
+
+Noisy data:
+
+- Percentage Squares Correct: 91.1%
+- Percentage Boards Correct: 91.1%
+
+## Other information (Optional, Max 100 words)
+
+Because of the fact that classification is non-binary, but multi class, softmax function was used. Softmax and binary cross entropy loss are best to use together as combined derivative of these functions cancel each other out to the difference between prediction and true values. This makes the back-propagation process more efficient and simpler. kNN gave 97% despite the fact that theoretically neural networks are better in general. The reason is size of training dataset which is rather too small in order to get better accuracy.
